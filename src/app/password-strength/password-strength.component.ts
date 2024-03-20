@@ -5,6 +5,11 @@ import {
   Output,
   SimpleChange,
 } from '@angular/core';
+import { PasswordStrengthService } from '../services/password-strength.service';
+
+interface IBar<T> {
+  [key: string]: T;
+}
 
 @Component({
   selector: 'app-password-strength',
@@ -20,43 +25,16 @@ export class PasswordStrengthComponent {
 
   private colors = ['red', 'yellow', 'green'];
 
-  private static checkStrength(p: string) {
-    let force = 0;
-
-    const regex = /[$-/:-?{-~!"^_@`\[\]#]/g;
-    const letters = /[a-zA-Z]+/.test(p);
-    const numbers = /[0-9]+/.test(p);
-    const symbols = regex.test(p);
-
-    const flags = [letters, numbers, symbols];
-
-    let passedMatches = 0;
-    for (const flag of flags) {
-      passedMatches += flag === true ? 1 : 0;
-    }
-
-    force += 2 * p.length + (p.length >= 10 ? 1 : 0);
-    force += passedMatches * 10;
-
-    force = p.length <= 8 ? Math.min(force, 10) : force;
-
-    force = passedMatches === 1 ? Math.min(force, 10) : force;
-    force = passedMatches === 2 ? Math.min(force, 20) : force;
-    force = passedMatches === 3 ? Math.min(force, 30) : force;
-
-    return force;
-  }
+  constructor(private pass: PasswordStrengthService) {}
 
   ngOnChanges(changes: { [propName: string]: SimpleChange }): void {
     const password = changes['passwordToCheck'].currentValue;
     this.setBarColors(3, '#ddd');
     if (password) {
-      const c = this.getColor(
-        PasswordStrengthComponent.checkStrength(password)
-      );
+      const c = this.getColor(this.pass.checkStrength(password));
       this.setBarColors(c.index, c.col);
 
-      const pwdStrength = PasswordStrengthComponent.checkStrength(password);
+      const pwdStrength = this.pass.checkStrength(password);
       pwdStrength === 30
         ? this.passwordStrength.emit(true)
         : this.passwordStrength.emit(false);
@@ -82,7 +60,7 @@ export class PasswordStrengthComponent {
 
   private setBarColors(count: number, col: string) {
     for (let n = 0; n < count; n++) {
-      (this as any)['bar' + n] = col;
+      (this as unknown as IBar<string>)['bar' + n] = col;
     }
   }
 }

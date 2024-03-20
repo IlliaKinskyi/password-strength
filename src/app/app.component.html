@@ -1,9 +1,10 @@
 <main class="main">
-  <form class="form" [formGroup]="myForm">
+  <form class="form" [formGroup]="signupForm">
     <label for="password" id="password">Enter your password</label>
-    <input type="password" id="password" formControlName="password" />
+    <app-password-input id="password" formControlName="password">
+    </app-password-input>
     <app-password-strength
-      [passwordToCheck]="myForm.value.password"
+      [passwordToCheck]="signupForm.value.password"
     ></app-password-strength>
   </form>
 </main>

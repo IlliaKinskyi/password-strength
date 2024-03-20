@@ -7,7 +7,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
-  public myForm = new FormGroup({
+  signupForm = new FormGroup({
     password: new FormControl<string>('', Validators.minLength(8)),
   });
 
